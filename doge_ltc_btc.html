@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+	</head>
+	<body>
+		<table>
+			<tr>
+				<td></td>
+				<td>DOGE/BTC</td>
+				<td>DOGE/LTC</td>
+				<td>LTC/BTC</td>
+			</tr>
+			<tr>	
+				<td>Last</td>
+				<td class="doge_btc"></td>
+				<td class="doge_ltc"></td>
+				<td class="ltc_btc"></td>
+			</tr>
+			<tr>	
+				<td>Buy</td>
+				<td class="doge_btc_buy"></td>
+				<td class="doge_ltc_buy"></td>
+				<td class="ltc_btc_buy"></td>
+			</tr>
+			<tr>	
+				<td>Sell</td>
+				<td class="doge_btc_sell"></td>
+				<td class="doge_ltc_sell"></td>
+				<td class="ltc_btc_sell"></td>
+			</tr>
+		</table>
+		<h1>BTC -> DOGE -> LTC -> BTC</h1>
+		<table>
+			<tr>
+				<td>Start</td>
+				<td>Fees from start</td>
+				<td>Tradeable BTC</td>
+				<td>Doge Amount</td>
+				<td>LTC Amount</td>
+				<td>LTC Fees</td>
+				<td>Final LTC Value</td>
+				<td>BTC Value</td>
+				<td>BTC Fees</td>
+				<td>Final BTC Value</td>
+			</tr>
+			<tr>
+				<td ><input id="btc_start" type="text" /></td>
+				<td id="btc_fees"></td>
+				<td id="btc_left"></td>
+				<td id="buy_doge_btc"></td>
+				<td id="sell_doge_ltc"></td>	
+				<td id="ltc_fees"></td>
+				<td id="ltc_left"></td>
+				<td id="sell_ltc_btc"></td>
+				<td id="btc_end_fee"></td>
+				<td id="btc_end"></td>
+			</tr>
+			<tr>
+				<td></td>
+				<td></td>
+				<td id="btc_fees"></td>
+				<td></td>
+				<td></td>	
+				<td id="ltc_fees"></td>
+				<td></td>
+				<td></td>
+				<td id="btc_end_fee"></td>
+				<td></td>
+			</tr>
+		</table>
+<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.3.min.js">
+</script>
+<script type="text/javascript">
+$(function () {
+		$('#btc_start').val(0.1);
+		trade_fee = 0.0034;
+		doge_btc = 0;
+		doge_btc_trade = 0;
+		doge_ltc = 0;
+		doge_ltc_trade = 0;
+		ltc_btc = 0;
+		ltc_btc_trade = 0;
+		doge_ltc_btc = 0;
+		doge_ltc_btc_trade = 0;
+		btc_amt = .1;
+    startRefresh();
+});
+
+function startRefresh() {
+	setTimeout(startRefresh, 10000)
+	//DOGE/BTC
+	var url = 'http://pubapi.cryptsy.com/api.php?method=singlemarketdata&marketid=132';
+	$.getJSON('http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20json%20where%20url%3D%22' + encodeURIComponent(url) + '%22&format=json', function (data) {
+		doge_btc = data['query'].results.json.return.markets.DOGE.lasttradeprice;
+		doge_btc_sell = data['query'].results.json.return.markets.DOGE.sellorders[0].price;
+		doge_btc_buy = data['query'].results.json.return.markets.DOGE.buyorders[0].price;
+
+		//DOGE/LTC
+		var url = 'http://pubapi.cryptsy.com/api.php?method=singlemarketdata&marketid=135';
+		$.getJSON('http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20json%20where%20url%3D%22' + encodeURIComponent(url) + '%22&format=json', function (data) {
+			doge_ltc = data['query'].results.json.return.markets.DOGE.lasttradeprice;
+			doge_ltc_buy = data['query'].results.json.return.markets.DOGE.buyorders[0].price;
+			doge_ltc_sell = data['query'].results.json.return.markets.DOGE.sellorders[0].price;
+
+			//LTC/BTC 
+			var url = 'http://pubapi.cryptsy.com/api.php?method=singlemarketdata&marketid=3';
+			$.getJSON('http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20json%20where%20url%3D%22' + encodeURIComponent(url) + '%22&format=json', function (data) {
+				ltc_btc = data['query'].results.json.return.markets.LTC.lasttradeprice;
+				ltc_btc_buy = data['query'].results.json.return.markets.LTC.buyorders[0].price;
+				ltc_btc_sell = data['query'].results.json.return.markets.LTC.sellorders[0].price;
+
+				$('.doge_btc').html(doge_btc);
+				$('.doge_btc_trade').html(doge_btc_trade);
+				$('.doge_btc_sell').html(doge_btc_sell);
+				$('.doge_btc_buy').html(doge_btc_buy);
+
+				$('.doge_ltc').html(doge_ltc); 
+				$('.doge_ltc_trade').html(doge_ltc_trade); 
+				$('.doge_ltc_buy').html(doge_ltc_buy); 
+				$('.doge_ltc_sell').html(doge_ltc_sell); 
+
+				$('.ltc_btc').html(ltc_btc);
+				$('.ltc_btc_trade').html(ltc_btc_trade);
+				$('.ltc_btc_buy').html(ltc_btc_buy);
+				$('.ltc_btc_sell').html(ltc_btc_sell);
+
+//start
+				btc_start = $('#btc_start').val();
+//calculate fees for trade 1
+				btc_fees = btc_start * trade_fee;
+				$('#btc_fees').html(btc_fees);
+//calculate what's left
+				btc_left = btc_start - btc_fees;
+				$('#btc_left').html(btc_left);
+//calculate amount of doge to purchase
+				buy_doge_btc = btc_left / doge_btc_sell;
+				$('#buy_doge_btc').html(buy_doge_btc);
+//calculate ltc value of doge
+				sell_doge_ltc = buy_doge_btc * doge_ltc_buy;
+				$('#sell_doge_ltc').html(sell_doge_ltc);
+//subtract fees 2
+				ltc_fees = sell_doge_ltc * trade_fee;
+				$('#ltc_fees').html(ltc_fees);
+//caltulate what's left
+				ltc_left = sell_doge_ltc - ltc_fees;
+				$('#ltc_left').html(ltc_left);
+//calculate btc value
+				sell_ltc_btc = ltc_left * ltc_btc_sell;
+				$('#sell_ltc_btc').html(sell_ltc_btc);
+//subtract fees 3
+				btc_end_fee = sell_ltc_btc * trade_fee;
+				$('#btc_end_fee').html(btc_end_fee);
+//calculate final value!
+				btc_end = sell_ltc_btc - btc_end_fee;
+				$('#btc_end').html(btc_end);
+				
+			});
+		});
+	});
+}
+</script>
+	</body>
+</html>
