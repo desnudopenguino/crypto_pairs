@@ -34,39 +34,30 @@
 		<table>
 			<tr>
 				<td>Start</td>
-				<td>Fees from start</td>
 				<td>Tradeable BTC</td>
 				<td>Doge Amount</td>
 				<td>LTC Amount</td>
-				<td>LTC Fees</td>
 				<td>Final LTC Value</td>
 				<td>BTC Value</td>
-				<td>BTC Fees</td>
 				<td>Final BTC Value</td>
 			</tr>
 			<tr>
 				<td ><input id="btc_start" type="text" /></td>
-				<td id="btc_fees"></td>
 				<td id="btc_left"></td>
 				<td id="buy_doge_btc"></td>
 				<td id="sell_doge_ltc"></td>	
-				<td id="ltc_fees"></td>
 				<td id="ltc_left"></td>
 				<td id="sell_ltc_btc"></td>
-				<td id="btc_end_fee"></td>
 				<td id="btc_end"></td>
 			</tr>
 			<tr>
+				<td>(-<span id="btc_fees"></span>)</td>
 				<td></td>
 				<td></td>
-				<td id="btc_fees"></td>
+				<td>(-<span id="ltc_fees"></span>)</td>
 				<td></td>
-				<td></td>	
-				<td id="ltc_fees"></td>
-				<td></td>
-				<td></td>
-				<td id="btc_end_fee"></td>
-				<td></td>
+				<td>(-<span id="btc_end_fee"></span>)</td>
+				<td id="calc_final"></td>	
 			</tr>
 		</table>
 <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.3.min.js">
@@ -82,10 +73,23 @@ $(function () {
 		ltc_btc = 0;
 		ltc_btc_trade = 0;
 		doge_ltc_btc = 0;
-		doge_ltc_btc_trade = 0;
-		btc_amt = .1;
     startRefresh();
 });
+
+function calcProfitability(start, p1buy, p2sell, p3sell, fee) {
+	p1 = ((start - (start*fee))/p1buy)*p2sell;
+	p2 = p1 - (p1*fee);
+	p3 = p2*p3sell;
+	p4 = p3 - (p3*fee);
+	return p4;
+}
+
+function calcProfitabilityNoFee(start, p1buy, p2sell, p3sell) {
+	p1 = start / p1buy;
+	p2 = p1 * p2sell;
+	p3 = p2 * p3sell;
+	return p3;
+}
 
 function startRefresh() {
 	setTimeout(startRefresh, 10000)
@@ -129,31 +133,44 @@ function startRefresh() {
 				btc_start = $('#btc_start').val();
 //calculate fees for trade 1
 				btc_fees = btc_start * trade_fee;
+				btc_fees = btc_fees.toFixed(8);
 				$('#btc_fees').html(btc_fees);
 //calculate what's left
 				btc_left = btc_start - btc_fees;
+				btc_left = btc_left.toFixed(8);
 				$('#btc_left').html(btc_left);
 //calculate amount of doge to purchase
 				buy_doge_btc = btc_left / doge_btc_sell;
+				buy_doge_btc = buy_doge_btc.toFixed(8);
 				$('#buy_doge_btc').html(buy_doge_btc);
 //calculate ltc value of doge
 				sell_doge_ltc = buy_doge_btc * doge_ltc_buy;
+				sell_doge_ltc = sell_doge_ltc.toFixed(8);
 				$('#sell_doge_ltc').html(sell_doge_ltc);
 //subtract fees 2
 				ltc_fees = sell_doge_ltc * trade_fee;
+				ltc_fees = ltc_fees.toFixed(8);
 				$('#ltc_fees').html(ltc_fees);
 //caltulate what's left
 				ltc_left = sell_doge_ltc - ltc_fees;
+				ltc_left = ltc_left.toFixed(8);
 				$('#ltc_left').html(ltc_left);
 //calculate btc value
 				sell_ltc_btc = ltc_left * ltc_btc_sell;
+				sell_ltc_btc = sell_ltc_btc.toFixed(8);
 				$('#sell_ltc_btc').html(sell_ltc_btc);
 //subtract fees 3
 				btc_end_fee = sell_ltc_btc * trade_fee;
+				btc_end_fee = btc_end_fee.toFixed(8);
 				$('#btc_end_fee').html(btc_end_fee);
 //calculate final value!
 				btc_end = sell_ltc_btc - btc_end_fee;
+				btc_end = btc_end.toFixed(8);
 				$('#btc_end').html(btc_end);
+
+				end = calcProfitability(btc_start, doge_btc_buy, doge_ltc_sell, ltc_btc_sell, 0.0034);
+
+				$('#calc_final').html(end);
 				
 			});
 		});
