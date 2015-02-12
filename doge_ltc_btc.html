@@ -7,40 +7,37 @@
 		<table>
 			<tr>
 				<td></td>
-				<td>DOGE/BTC</td>
-				<td>DOGE/LTC</td>
-				<td>LTC/BTC</td>
+				<td id="p1_label"></td>
+				<td id="p2_label"></td>
+				<td id="p3_label"></td>
 			</tr>
 			<tr>	
 				<td>Last</td>
-				<td class="doge_btc"></td>
-				<td class="doge_ltc"></td>
-				<td class="ltc_btc"></td>
+				<td id="p1_last"></td>
+				<td id="p2_last"></td>
+				<td id="p3_last"></td>
 			</tr>
 			<tr>	
 				<td>Buy</td>
-				<td class="doge_btc_buy"></td>
-				<td class="doge_ltc_buy"></td>
-				<td class="ltc_btc_buy"></td>
+				<td id="p1_buy"></td>
+				<td id="p2_buy"></td>
+				<td id="p3_buy"></td>
 			</tr>
 			<tr>	
 				<td>Sell</td>
-				<td class="doge_btc_sell"></td>
-				<td class="doge_ltc_sell"></td>
-				<td class="ltc_btc_sell"></td>
+				<td id="p1_sell"></td>
+				<td id="p2_sell"></td>
+				<td id="p3_sell"></td>
 			</tr>
 		</table>
-		<h1>BTC -> DOGE -> LTC -> BTC</h1>
+		<hr>
 		<table>
 			<tr>
 				<td>Start</td>
-				<td id="btc_doge_ltc_final"></td>
+				<td id="trade1"></td>
 			</tr>
-				<td ><input id="btc_start" type="text" /></td>
-				<td id="btc_ltc_doge_final"></td>
-			</tr>
-			<tr>
-				<td id="btc_end"></td>
+				<td ><input id="start" type="text" /></td>
+				<td id="trade2"></td>
 			</tr>
 		</table>
 
@@ -48,130 +45,86 @@
 </script>
 <script type="text/javascript">
 $(function () {
-		$('#btc_start').val(0.1);
-		trade_fee = 0.0034;
-		doge_btc = 0;
-		doge_btc_trade = 0;
-		doge_ltc = 0;
-		doge_ltc_trade = 0;
-		ltc_btc = 0;
-		ltc_btc_trade = 0;
-		doge_ltc_btc = 0;
+		$('#start').val(0.1);
+		pair1 = 132;
+		pair2 = 135;
+		pair3 = 3;
+		fee = 0.0034;
     startRefresh();
 });
 
 function calcProfitability(start, p1buy, p2sell, p3sell, fee) {
-console.log("Start " + start);
-console.log("Trade 1 " + p1buy);
-console.log("Trade 2 " + p2sell);
-console.log("Trade 3 " + p3sell);
 	p1 = ((start - (start*fee))/p1buy)*p2sell;
 	p2 = p1 - (p1*fee);
 	p3 = p2*p3sell;
 	p4 = p3 - (p3*fee);
-	return p4;
+	return p4.toFixed(8);
 }
 
 function calcAltProfitability(start, p1buy, p2buy, p3sell, fee) {
-console.log("Start " + start);
-console.log("Trade 1 " + p1buy);
-console.log("Trade 2 " + p2buy);
-console.log("Trade 3 " + p3sell);
 	p1 = ((start - (start*fee))/p1buy)/p2buy;
 	p2 = p1 - (p1*fee);
 	p3 = p2*p3sell;
 	p4 = p3 - (p3*fee);
-	return p4;
+	return p4.toFixed(8);
 }
 
-function calcLinearProfitability(start, p1buy, p2sell, p3sell, fee) {
-//caltulate starting amount
-				btc_left = btc_start - (btc_start * trade_fee);
-//calculate amount of doge to purchase
-				buy_doge_btc = btc_left / doge_btc_sell;
-//calculate ltc value of doge
-				sell_doge_ltc = buy_doge_btc * doge_ltc_buy;
-//subtract fees 2
-				ltc_fees = sell_doge_ltc * trade_fee;
-//caltulate what's left
-				ltc_left = sell_doge_ltc - ltc_fees;
-//calculate btc value
-				sell_ltc_btc = ltc_left * ltc_btc_sell;
-//subtract fees 3
-				btc_end_fee = sell_ltc_btc * trade_fee;
-//calculate final value!
-				btc_end = sell_ltc_btc - btc_end_fee;
-				btc_end = btc_end.toFixed(8);
-				$('#btc_end').html(btc_end);
-
-}
 
 function startRefresh() {
 	setTimeout(startRefresh, 10000)
 	//DOGE/BTC
-	var url = 'http://pubapi.cryptsy.com/api.php?method=singlemarketdata&marketid=132';
+	var url = 'http://pubapi.cryptsy.com/api.php?method=singlemarketdata&marketid='+ pair1;
 	$.getJSON('http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20json%20where%20url%3D%22' + encodeURIComponent(url) + '%22&format=json', function (data) {
-		doge_btc = data['query'].results.json.return.markets.DOGE.lasttradeprice;
-		doge_btc_sell = data['query'].results.json.return.markets.DOGE.sellorders[0].price;
-		doge_btc_buy = data['query'].results.json.return.markets.DOGE.buyorders[0].price;
+		for (var i in data['query'].results.json.return.markets) {
+			p1_last = data['query'].results.json.return.markets[i].lasttradeprice;
+			p1_sell = data['query'].results.json.return.markets[i].sellorders[0].price;
+			p1_buy = data['query'].results.json.return.markets[i].buyorders[0].price;
+			p1_label = data['query'].results.json.return.markets[i].label;
+		}
+		
 
 		//DOGE/LTC
-		var url = 'http://pubapi.cryptsy.com/api.php?method=singlemarketdata&marketid=135';
+		var url = 'http://pubapi.cryptsy.com/api.php?method=singlemarketdata&marketid='+ pair2;
 		$.getJSON('http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20json%20where%20url%3D%22' + encodeURIComponent(url) + '%22&format=json', function (data) {
-			doge_ltc = data['query'].results.json.return.markets.DOGE.lasttradeprice;
-			doge_ltc_buy = data['query'].results.json.return.markets.DOGE.buyorders[0].price;
-			doge_ltc_sell = data['query'].results.json.return.markets.DOGE.sellorders[0].price;
+			for (var i in data['query'].results.json.return.markets) {
+				p2_last = data['query'].results.json.return.markets[i].lasttradeprice;
+				p2_sell = data['query'].results.json.return.markets[i].sellorders[0].price;
+				p2_buy = data['query'].results.json.return.markets[i].buyorders[0].price;
+				p2_label = data['query'].results.json.return.markets[i].label;
+			}
 
 			//LTC/BTC 
-			var url = 'http://pubapi.cryptsy.com/api.php?method=singlemarketdata&marketid=3';
+			var url = 'http://pubapi.cryptsy.com/api.php?method=singlemarketdata&marketid='+ pair3;
 			$.getJSON('http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20json%20where%20url%3D%22' + encodeURIComponent(url) + '%22&format=json', function (data) {
-				ltc_btc = data['query'].results.json.return.markets.LTC.lasttradeprice;
-				ltc_btc_buy = data['query'].results.json.return.markets.LTC.buyorders[0].price;
-				ltc_btc_sell = data['query'].results.json.return.markets.LTC.sellorders[0].price;
+				for (var i in data['query'].results.json.return.markets) {
+					p3_last = data['query'].results.json.return.markets[i].lasttradeprice;
+					p3_sell = data['query'].results.json.return.markets[i].sellorders[0].price;
+					p3_buy = data['query'].results.json.return.markets[i].buyorders[0].price;
+					p3_label = data['query'].results.json.return.markets[i].label;
+				}
+				$('#p1_label').html(p1_label);
+				$('#p2_label').html(p2_label);
+				$('#p3_label').html(p3_label);
 
-				$('.doge_btc').html(doge_btc);
-				$('.doge_btc_trade').html(doge_btc_trade);
-				$('.doge_btc_sell').html(doge_btc_sell);
-				$('.doge_btc_buy').html(doge_btc_buy);
+				$('#p1_last').html(p1_last);
+				$('#p2_last').html(p2_last);
+				$('#p3_last').html(p3_last);
 
-				$('.doge_ltc').html(doge_ltc); 
-				$('.doge_ltc_trade').html(doge_ltc_trade); 
-				$('.doge_ltc_buy').html(doge_ltc_buy); 
-				$('.doge_ltc_sell').html(doge_ltc_sell); 
+				$('#p1_buy').html(p1_buy);
+				$('#p2_buy').html(p2_buy);
+				$('#p3_buy').html(p3_buy);
 
-				$('.ltc_btc').html(ltc_btc);
-				$('.ltc_btc_trade').html(ltc_btc_trade);
-				$('.ltc_btc_buy').html(ltc_btc_buy);
-				$('.ltc_btc_sell').html(ltc_btc_sell);
+				$('#p1_sell').html(p1_sell);
+				$('#p2_sell').html(p2_sell);
+				$('#p3_sell').html(p3_sell);
 
-				btc_start = $('#btc_start').val();
+				start = $('#start').val();
 
-				btc_left = btc_start - (btc_start * trade_fee);
-//calculate amount of doge to purchase
-				buy_doge_btc = btc_left / doge_btc_sell;
-//calculate ltc value of doge
-				sell_doge_ltc = buy_doge_btc * doge_ltc_buy;
-//subtract fees 2
-				ltc_fees = sell_doge_ltc * trade_fee;
-//caltulate what's left
-				ltc_left = sell_doge_ltc - ltc_fees;
-//calculate btc value
-				sell_ltc_btc = ltc_left * ltc_btc_sell;
-//subtract fees 3
-				btc_end_fee = sell_ltc_btc * trade_fee;
-//calculate final value!
-				btc_end = sell_ltc_btc - btc_end_fee;
-				btc_end = btc_end.toFixed(8);
-				$('#btc_end').html(btc_end);
+				trade1 = calcProfitability(start, p1_sell, p2_buy, p3_buy, fee);
+				$('#trade1').html(trade1);
 
-				btc_doge_ltc_end = calcProfitability(btc_start, doge_btc_sell, doge_ltc_buy, ltc_btc_buy, 0.0034);
-				btc_doge_ltc_end = btc_doge_ltc_end.toFixed(8);
-
-				$('#btc_doge_ltc_final').html(btc_doge_ltc_end);
-				btc_ltc_doge_end = calcAltProfitability(btc_start, ltc_btc_sell, doge_ltc_sell, doge_btc_buy, 0.0034);
-				btc_ltc_doge_end = btc_ltc_doge_end.toFixed(8);
-				
-				$('#btc_ltc_doge_final').html(btc_ltc_doge_end);
+				trade2 = calcAltProfitability(start, p3_sell, p2_sell, p1_buy, fee);
+				$('#trade2').html(trade2);
 			});
 		});
 	});
