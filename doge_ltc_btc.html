@@ -34,10 +34,21 @@
 		<table>
 			<tr>
 				<td>Start</td>
-				<td id="trade1"></td>
+				<td>Fee</td>
 			</tr>
 				<td ><input id="start" type="text" /></td>
+				<td><input id="fee" type="text" /></td>
+			</tr>
+		</table>
+		<table>
+			<tr>
+				<td>Normal</td>
+				<td>Reverse</td>
+				<td>Last</td>
+			<tr>
+				<td id="trade1"></td>
 				<td id="trade2"></td>
+				<td id="trade3"></td>
 			</tr>
 		</table>
 
@@ -46,10 +57,10 @@
 <script type="text/javascript">
 $(function () {
 		$('#start').val(0.1);
+		$('#fee').val(0.0034);
 		pair1 = 132;
 		pair2 = 135;
 		pair3 = 3;
-		fee = 0.0034;
     startRefresh();
 });
 
@@ -119,12 +130,16 @@ function startRefresh() {
 				$('#p3_sell').html(p3_sell);
 
 				start = $('#start').val();
+				fee = $('#fee').val();
 
 				trade1 = calcProfitability(start, p1_sell, p2_buy, p3_buy, fee);
 				$('#trade1').html(trade1);
 
 				trade2 = calcAltProfitability(start, p3_sell, p2_sell, p1_buy, fee);
 				$('#trade2').html(trade2);
+
+				trade3 = calcProfitability(start, p1_last, p2_last, p3_last, fee);
+				$('#trade3').html(trade3);
 			});
 		});
 	});
