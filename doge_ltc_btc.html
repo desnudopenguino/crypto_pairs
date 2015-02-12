@@ -84,6 +84,28 @@ console.log("Trade 3 " + p3sell);
 	return p4;
 }
 
+function calcLinearProfitability(start, p1buy, p2sell, p3sell, fee) {
+//caltulate starting amount
+				btc_left = btc_start - (btc_start * trade_fee);
+//calculate amount of doge to purchase
+				buy_doge_btc = btc_left / doge_btc_sell;
+//calculate ltc value of doge
+				sell_doge_ltc = buy_doge_btc * doge_ltc_buy;
+//subtract fees 2
+				ltc_fees = sell_doge_ltc * trade_fee;
+//caltulate what's left
+				ltc_left = sell_doge_ltc - ltc_fees;
+//calculate btc value
+				sell_ltc_btc = ltc_left * ltc_btc_sell;
+//subtract fees 3
+				btc_end_fee = sell_ltc_btc * trade_fee;
+//calculate final value!
+				btc_end = sell_ltc_btc - btc_end_fee;
+				btc_end = btc_end.toFixed(8);
+				$('#btc_end').html(btc_end);
+
+}
+
 function startRefresh() {
 	setTimeout(startRefresh, 10000)
 	//DOGE/BTC
@@ -126,19 +148,19 @@ function startRefresh() {
 
 				btc_left = btc_start - (btc_start * trade_fee);
 //calculate amount of doge to purchase
-				buy_doge_btc = (btc_start - (btc_start * trade_fee)) / doge_btc_sell;
+				buy_doge_btc = btc_left / doge_btc_sell;
 //calculate ltc value of doge
-				sell_doge_ltc = ((btc_start - (btc_start * trade_fee)) / doge_btc_sell) * doge_ltc_buy;
+				sell_doge_ltc = buy_doge_btc * doge_ltc_buy;
 //subtract fees 2
-				ltc_fees = (((btc_start - (btc_start * trade_fee)) / doge_btc_sell) * doge_ltc_buy) * trade_fee;
+				ltc_fees = sell_doge_ltc * trade_fee;
 //caltulate what's left
-				ltc_left = (((btc_start - (btc_start * trade_fee)) / doge_btc_sell) * doge_ltc_buy) - ((((btc_start - (btc_start * trade_fee)) / doge_btc_sell) * doge_ltc_buy) * trade_fee);
+				ltc_left = sell_doge_ltc - ltc_fees;
 //calculate btc value
-				sell_ltc_btc = ((((btc_start - (btc_start * trade_fee)) / doge_btc_sell) * doge_ltc_buy) - ((((btc_start - (btc_start * trade_fee)) / doge_btc_sell) * doge_ltc_buy) * trade_fee)) * ltc_btc_sell;
+				sell_ltc_btc = ltc_left * ltc_btc_sell;
 //subtract fees 3
 				btc_end_fee = sell_ltc_btc * trade_fee;
 //calculate final value!
-				btc_end = (((((btc_start - (btc_start * trade_fee)) / doge_btc_sell) * doge_ltc_buy) - ((((btc_start - (btc_start * trade_fee)) / doge_btc_sell) * doge_ltc_buy) * trade_fee)) * ltc_btc_sell) -  ((((((btc_start - (btc_start * trade_fee)) / doge_btc_sell) * doge_ltc_buy) - ((((btc_start - (btc_start * trade_fee)) / doge_btc_sell) * doge_ltc_buy) * trade_fee)) * ltc_btc_sell)*btc_end_fee);
+				btc_end = sell_ltc_btc - btc_end_fee;
 				btc_end = btc_end.toFixed(8);
 				$('#btc_end').html(btc_end);
 
