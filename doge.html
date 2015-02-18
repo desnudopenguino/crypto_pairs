@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<style>
+			td {
+				padding: 0.5em;
+				border-bottom: 2px solid #dddddd;
+			}
+
+			tr {
+			}
+		</style>
+		<meta charset="UTF-8">
+	</head>
+	<body style="margin:5em; background-color: #222; color: #eee;">
+		<table id="market_table">
+			<tr>
+				<td>Market Name</td>
+				<td>Last</td>
+				<td>Buy</td>
+				<td>Sell</td>
+			</tr>
+			<tr id="cryptsy"></tr>
+			<tr id="cex"></tr>
+			<tr id="bittrex"></tr>
+			<tr id="allcoin"></tr>
+			<tr id="c-cex"></tr>
+			<tr id="comkort"></tr>
+			<tr id="vircurex"></tr>
+			<tr id="coin-swap"></tr>
+		</table>
+		
+<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.3.min.js">
+</script>
+<script type="text/javascript">
+//The crypto trios are stored in this markets array
+var markets = new Array();
+markets['cryptsy'] = "http://pubapi.cryptsy.com/api.php?method=singlemarketdata&marketid=132";
+markets['cex'] = "https://cex.io/api/ticker/DOGE/BTC";
+markets['bittrex'] = "https://bittrex.com/api/v1.1/public/getticker?market=btc-doge";
+markets['allcoin'] = "https://www.allcoin.com/api2/pair/DOGE_BTC";
+markets['c-cex'] = "https://c-cex.com/t/doge-btc.json";
+markets['comkort'] = "https://api.comkort.com/v1/public/market/summary?market_alias=doge_btc";
+markets['vircurex'] = "https://api.vircurex.com/api/get_info_for_1_currency.json?base=DOGE&alt=BTC";
+markets['coin-swap'] = "https://api.coin-swap.net/market/stats/DOGE/BTC";
+$(function () {
+    startRefresh();
+});
+
+
+function startRefresh() {
+	for(var key in markets) {
+		var url = markets[key];
+
+		if(key == "cryptsy") {
+			$.getJSON('http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20json%20where%20url%3D%22' + encodeURIComponent(url) + '%22&format=json', function (data) {
+				for (var i in data['query'].results.json.return.markets) {
+					p1_last = data['query'].results.json.return.markets[i].lasttradeprice;
+					p1_sell = data['query'].results.json.return.markets[i].sellorders[0].price;
+					p1_buy = data['query'].results.json.return.markets[i].buyorders[0].price;
+				}
+
+		$("#cryptsy").html("<td>cryptsy</td><td>"+p1_last+"</td><td>"+p1_buy+"</td><td>"+p1_sell+"</td>");
+			});
+		
+		}
+		if(key == "cex") {
+			$.getJSON('http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20json%20where%20url%3D%22' + encodeURIComponent(url) + '%22&format=json', function (data) {
+					p1_last = data['query'].results.json.last;
+					p1_last = Number(p1_last).toFixed(8);
+					p1_sell = data['query'].results.json.ask;
+					p1_sell = Number(p1_sell).toFixed(8);
+					p1_buy = data['query'].results.json.bid;
+					p1_buy = Number(p1_buy).toFixed(8);
+
+			$("#cex").html("<td>cex</td><td>"+p1_last+"</td><td>"+p1_buy+"</td><td>"+p1_sell+"</td>");
+			});
+		}
+		if(key == "bittrex") {
+			$.getJSON('http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20json%20where%20url%3D%22' + encodeURIComponent(url) + '%22&format=json', function (data) {
+					p1_last = data['query'].results.json.result.Last;
+					p1_last = Number(p1_last).toFixed(8);
+					p1_sell = data['query'].results.json.result.Ask;
+					p1_sell = Number(p1_sell).toFixed(8);
+					p1_buy = data['query'].results.json.result.Bid;
+					p1_buy = Number(p1_buy).toFixed(8);
+
+			$("#bittrex").html("<td>bittrex</td><td>"+p1_last+"</td><td>"+p1_buy+"</td><td>"+p1_sell+"</td>");
+			});
+		}
+		if(key == "allcoin") {
+			$.getJSON('http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20json%20where%20url%3D%22' + encodeURIComponent(url) + '%22&format=json', function (data) {
+					p1_last = data['query'].results.json.data.trade_price;
+					p1_last = Number(p1_last).toFixed(8);
+					p1_sell = data['query'].results.json.data.top_ask;
+					p1_sell = Number(p1_sell).toFixed(8);
+					p1_buy = data['query'].results.json.data.top_bid;
+					p1_buy = Number(p1_buy).toFixed(8);
+
+			$("#allcoin").html("<td>allcoin</td><td>"+p1_last+"</td><td>"+p1_buy+"</td><td>"+p1_sell+"</td>");
+			});
+		}
+		if(key == "c-cex") {
+			$.getJSON('http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20json%20where%20url%3D%22' + encodeURIComponent(url) + '%22&format=json', function (data) {
+					p1_last = data['query'].results.ticker.lastprice;
+					p1_last = Number(p1_last).toFixed(8);
+					p1_sell = data['query'].results.ticker.lastsell;
+					p1_sell = Number(p1_sell).toFixed(8);
+					p1_buy = data['query'].results.ticker.lastbuy;
+					p1_buy = Number(p1_buy).toFixed(8);
+
+			$("#c-cex").html("<td>c-cex</td><td>"+p1_last+"</td><td>"+p1_buy+"</td><td>"+p1_sell+"</td>");
+			});
+		}
+		if(key == "comkort") {
+			$.getJSON('http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20json%20where%20url%3D%22' + encodeURIComponent(url) + '%22&format=json', function (data) {
+				for (var i in data['query'].results.markets) {
+					p1_last = data['query'].results.markets[i].last_price;
+					p1_sell = data['query'].results.markets[i].sell_orders[0].price;
+					p1_sell = data['query'].results.markets[i].buy_orders[0].price;
+				}
+			$("#comkort").html("<td>comkort</td><td>"+p1_last+"</td><td>"+p1_buy+"</td><td>"+p1_sell+"</td>");
+			});
+		}
+		if(key == "vircurex") {
+			$.getJSON('http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20json%20where%20url%3D%22' + encodeURIComponent(url) + '%22&format=json', function (data) {
+					p1_last = data['query'].results.json.last_trade;
+					p1_last = Number(p1_last).toFixed(8);
+					p1_sell = data['query'].results.json.lowest_ask;
+					p1_sell = Number(p1_sell).toFixed(8);
+					p1_buy = data['query'].results.json.highest_bid;
+					p1_buy = Number(p1_buy).toFixed(8);
+
+			$("#vircurex").html("<td>vircurex</td><td>"+p1_last+"</td><td>"+p1_buy+"</td><td>"+p1_sell+"</td>");
+			});
+		}
+	}
+	setTimeout(startRefresh, 10000)
+}
+</script>
+	</body>
+</html>

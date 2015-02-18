@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<style>
+			.normal {
+				color: purple;
+			}
+			.reverse {
+				color: blue;
+			}
+			.last {
+				color: orange;
+			}
+		</style>
+		<meta charset="UTF-8">
+	</head>
+	<body style="margin:5em; background-color: #222; color: #eee;">
+		<table>
+			<tr>
+				<td>Market Trio</td>
+			</tr>
+			<tr>
+				<td><select id="markets"></select></td>
+			</tr>
+		</table>
+		
+		<table>
+			<tr>
+				<td></td>
+				<td id="p1_label"></td>
+				<td id="p2_label"></td>
+				<td id="p3_label"></td>
+			</tr>
+			<tr>	
+				<td>Last</td>
+				<td id="p1_last"></td>
+				<td id="p2_last"></td>
+				<td id="p3_last"></td>
+			</tr>
+			<tr>	
+				<td>Buy</td>
+				<td id="p1_buy"></td>
+				<td id="p2_buy"></td>
+				<td id="p3_buy"></td>
+			</tr>
+			<tr>	
+				<td>Sell</td>
+				<td id="p1_sell"></td>
+				<td id="p2_sell"></td>
+				<td id="p3_sell"></td>
+			</tr>
+		</table>
+		<hr>
+		<table>
+			<tr>
+				<td>Start</td>
+				<td>Fee</td>
+			</tr>
+				<td ><input id="start" type="text" /></td>
+				<td><input id="fee" type="text" /></td>
+			</tr>
+		</table>
+		<table>
+			<tr>
+				<td >Normal</td>
+				<td >Reverse</td>
+				<td >Last</td>
+			<tr>
+				<td id="trade1"></td>
+				<td id="trade2"></td>
+				<td id="trade3"></td>
+			</tr>
+		</table>
+
+<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.3.min.js">
+</script>
+<script type="text/javascript">
+//The crypto trios are stored in this markets array
+var markets = new Array();
+markets['ac_xrp_btc'] = new Array(199,342,454);
+markets['42_ltc_btc'] = new Array(141,345,454);
+markets['anc_ltc_btc'] = new Array(66,121,3);
+markets['blk_ltc_btc'] = new Array(179,191,3);
+markets['blk_xrp_btc'] = new Array(179,323,454);
+markets['anc_xrp_btc'] = new Array(66,317,454);
+markets['doge_ltc_btc'] = new Array(132,135,3);
+markets['doge_xrp_btc'] = new Array(132,311,454);
+markets['doge_btc_usd'] = new Array(182,132,2);
+markets['drk_ltc_btc'] = new Array(155,214,3);
+markets['drk_xrp_btc'] = new Array(155,313,454);
+markets['dvc_ltc_btc'] = new Array(40,52,3);
+markets['dvc_xrp_btc'] = new Array(40,396,454);
+markets['ftc_ltc_btc'] = new Array(5,4,3);
+markets['ltc_xrp_btc'] = new Array(3,312,454);
+markets['ltc_btc_usd'] = new Array(1,3,2);
+markets['nxt_ltc_btc'] = new Array(159,162,3);
+markets['nxt_xrp_btc'] = new Array(159,324,454);
+markets['ppc_ltc_btc'] = new Array(28,125,3);
+markets['ppc_xrp_btc'] = new Array(28,322,454);
+
+$(function () {
+		for (var key in markets) {
+			$('#markets').append( $('<option></option>').val(key).html(key));
+		}
+		$('#start').val(0.1);
+		$('#fee').val(0.0033);
+    startRefresh();
+});
+
+function calcProfitability(start, p1buy, p2sell, p3sell, fee) {
+	p1 = ((start - (start*fee))/p1buy)*p2sell;
+	p2 = p1 - (p1*fee);
+	p3 = p2*p3sell;
+	p4 = p3 - (p3*fee);
+	return p4.toFixed(8);
+}
+
+function calcAltProfitability(start, p1buy, p2buy, p3sell, fee) {
+	p1 = ((start - (start*fee))/p1buy)/p2buy;
+	p2 = p1 - (p1*fee);
+	p3 = p2*p3sell;
+	p4 = p3 - (p3*fee);
+	return p4.toFixed(8);
+}
+
+
+function startRefresh() {
+	market = markets[$('#markets').val()];
+console.log(market);
+	setTimeout(startRefresh, 10000)
+
+	var url = 'http://pubapi.cryptsy.com/api.php?method=singlemarketdata&marketid='+ market[0];
+	$.getJSON('http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20json%20where%20url%3D%22' + encodeURIComponent(url) + '%22&format=json', function (data) {
+		for (var i in data['query'].results.json.return.markets) {
+			p1_last = data['query'].results.json.return.markets[i].lasttradeprice;
+			p1_sell = data['query'].results.json.return.markets[i].sellorders[0].price;
+			p1_buy = data['query'].results.json.return.markets[i].buyorders[0].price;
+			p1_label = data['query'].results.json.return.markets[i].label;
+		}
+		
+		var url = 'http://pubapi.cryptsy.com/api.php?method=singlemarketdata&marketid='+ market[1];
+		$.getJSON('http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20json%20where%20url%3D%22' + encodeURIComponent(url) + '%22&format=json', function (data) {
+			for (var i in data['query'].results.json.return.markets) {
+				p2_last = data['query'].results.json.return.markets[i].lasttradeprice;
+				p2_sell = data['query'].results.json.return.markets[i].sellorders[0].price;
+				p2_buy = data['query'].results.json.return.markets[i].buyorders[0].price;
+				p2_label = data['query'].results.json.return.markets[i].label;
+			}
+
+			var url = 'http://pubapi.cryptsy.com/api.php?method=singlemarketdata&marketid='+ market[2];
+			$.getJSON('http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20json%20where%20url%3D%22' + encodeURIComponent(url) + '%22&format=json', function (data) {
+				for (var i in data['query'].results.json.return.markets) {
+					p3_last = data['query'].results.json.return.markets[i].lasttradeprice;
+					p3_sell = data['query'].results.json.return.markets[i].sellorders[0].price;
+					p3_buy = data['query'].results.json.return.markets[i].buyorders[0].price;
+					p3_label = data['query'].results.json.return.markets[i].label;
+				}
+				$('#p1_label').html(p1_label);
+				$('#p2_label').html(p2_label);
+				$('#p3_label').html(p3_label);
+
+				$('#p1_last').html(p1_last);
+				$('#p2_last').html(p2_last);
+				$('#p3_last').html(p3_last);
+
+				$('#p1_buy').html(p1_buy);
+				$('#p2_buy').html(p2_buy);
+				$('#p3_buy').html(p3_buy);
+
+				$('#p1_sell').html(p1_sell);
+				$('#p2_sell').html(p2_sell);
+				$('#p3_sell').html(p3_sell);
+
+				start = $('#start').val();
+				fee = $('#fee').val();
+
+				trade1 = calcProfitability(start, p1_sell, p2_buy, p3_buy, fee);
+				$('#trade1').html(trade1);
+
+				trade2 = calcAltProfitability(start, p3_sell, p2_sell, p1_buy, fee);
+				$('#trade2').html(trade2);
+
+				trade3 = calcProfitability(start, p1_last, p2_last, p3_last, fee);
+				$('#trade3').html(trade3);
+			});
+		});
+	});
+}
+</script>
+	</body>
+</html>
