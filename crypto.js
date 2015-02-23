@@ -31,6 +31,21 @@ function getCexPair(pair_string, callback) {
 	});
 }
 
+function getBittrexPair(pair_string, callback) {
+	var market = new Array();
+	$.getJSON('http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20json%20where%20url%3D%22' + encodeURIComponent("https://bittrex.com/api/v1.1/public/getticker?market="+pair_string) + '%22&format=json', function (data) {
+		json = data['query'].results.json.result;
+		market['last'] = json.Last;
+		market['sell'] = json.Ask;
+		market['buy'] = json.Bid;
+
+		market = standardNumbers(market);
+		market = callback(market);
+		return market;
+	});
+
+}
+
 function standardNumbers(items) {
 	items['last'] = Number(items['last']).toFixed(8);
 	items['sell'] = Number(items['sell']).toFixed(8);
