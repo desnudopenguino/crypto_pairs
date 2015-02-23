@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<style>
+			.normal {
+				color: purple;
+			}
+			.reverse {
+				color: blue;
+			}
+			.last {
+				color: orange;
+			}
+		</style>
+		<meta charset="UTF-8">
+	</head>
+	<body style="margin:5em; background-color: #222; color: #eee;">
+		<table>
+			<tr>
+				<td>Market Trio</td>
+			</tr>
+			<tr>
+				<td><select id="markets"></select></td>
+			</tr>
+		</table>
+		
+		<table>
+			<tr>
+				<td></td>
+				<td id="p1_label"></td>
+				<td id="p2_label"></td>
+				<td id="p3_label"></td>
+			</tr>
+			<tr>	
+				<td>Last</td>
+				<td id="p1_last"></td>
+				<td id="p2_last"></td>
+				<td id="p3_last"></td>
+			</tr>
+			<tr>	
+				<td>Buy</td>
+				<td id="p1_buy"></td>
+				<td id="p2_buy"></td>
+				<td id="p3_buy"></td>
+			</tr>
+			<tr>	
+				<td>Sell</td>
+				<td id="p1_sell"></td>
+				<td id="p2_sell"></td>
+				<td id="p3_sell"></td>
+			</tr>
+		</table>
+		<hr>
+		<table>
+			<tr>
+				<td>Start</td>
+				<td>Fee</td>
+			</tr>
+				<td ><input id="start" type="text" /></td>
+				<td><input id="fee" type="text" /></td>
+			</tr>
+		</table>
+		<table>
+			<tr>
+				<td >Normal</td>
+				<td >Reverse</td>
+				<td >Last</td>
+			<tr>
+				<td id="trade1"></td>
+				<td id="trade2"></td>
+				<td id="trade3"></td>
+			</tr>
+		</table>
+
+<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.3.min.js">
+</script>
+<script type="text/javascript" src="crypto.js"></script>
+<script type="text/javascript">
+
+$(function () {
+		$('#start').val(0.1);
+		$('#fee').val(0.002);
+    startRefresh();
+});
+
+function startRefresh() {
+	setTimeout(startRefresh, 10000)
+
+	getCexPair('GHS/BTC', function market1) {
+
+		getCexPair('GHS/LTC', function market2) {
+		
+			getCexPair('LTC/BTC', function market3) {
+				$('#p1_last').html(market1['last']);
+				$('#p2_last').html(market2['last']);
+				$('#p3_last').html(market3['last']);
+
+				$('#p1_buy').html(market1['buy']);
+				$('#p2_buy').html(market2['buy']);
+				$('#p3_buy').html(market3['buy']);
+
+				$('#p1_sell').html(market1['sell']);
+				$('#p2_sell').html(market2['sell']);
+				$('#p3_sell').html(market3['sell']);
+
+				start = $('#start').val();
+				fee = $('#fee').val();
+
+				trade1 = calcProfitability(start, market1['sell'], market2['buy'], market2['buy'], fee);
+				$('#trade1').html(trade1);
+
+				trade2 = calcAltProfitability(start, market3['sell'], market2['sell'], market1['buy'], fee);
+				$('#trade2').html(trade2);
+
+				trade3 = calcProfitability(start, market1['last'], market2['last'], market3['last'], fee);
+				$('#trade3').html(trade3);
+
+			});
+		});
+	});
+}
+</script>
+	</body>
+</html>

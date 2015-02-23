@@ -52,3 +52,20 @@ function standardNumbers(items) {
 	items['buy'] = Number(items['buy']).toFixed(8);
 	return items;
 }
+
+function calcProfitability(start, p1buy, p2sell, p3sell, fee) {
+	p1 = ((start - (start*fee))/p1buy)*p2sell;
+	p2 = p1 - (p1*fee);
+	p3 = p2*p3sell;
+	p4 = p3 - (p3*fee);
+	return p4.toFixed(8);
+}
+
+function calcAltProfitability(start, p1buy, p2buy, p3sell, fee) {
+	p1 = ((start - (start*fee))/p1buy)/p2buy;
+	p2 = p1 - (p1*fee);
+	p3 = p2*p3sell;
+	p4 = p3 - (p3*fee);
+	return p4.toFixed(8);
+}
+
