@@ -11,19 +11,14 @@
 			.last {
 				color: orange;
 			}
+			td {
+				padding: 0.5em;
+				border-bottom: 2px solid #dddddd;
+			}
 		</style>
 		<meta charset="UTF-8">
 	</head>
 	<body style="margin:5em; background-color: #222; color: #eee;">
-		<table>
-			<tr>
-				<td>Market Trio</td>
-			</tr>
-			<tr>
-				<td><select id="markets"></select></td>
-			</tr>
-		</table>
-		
 		<table>
 			<tr>
 				<td></td>
@@ -86,11 +81,11 @@ $(function () {
 function startRefresh() {
 	setTimeout(startRefresh, 10000)
 
-	getCexPair('GHS/BTC', function market1) {
+	getCexPair('GHS/BTC', function (market1) {
 
-		getCexPair('GHS/LTC', function market2) {
+		getCexPair('GHS/LTC', function (market2) {
 		
-			getCexPair('LTC/BTC', function market3) {
+			getCexPair('LTC/BTC', function (market3) {
 				$('#p1_last').html(market1['last']);
 				$('#p2_last').html(market2['last']);
 				$('#p3_last').html(market3['last']);
