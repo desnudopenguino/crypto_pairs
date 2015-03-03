@@ -8,7 +8,6 @@ function getCryptsyPair(pair_string, callback) {
 			json = data['query'].results.json.return.markets[i];
 			var market = setMarket(json.lasttradeprice, json.buyorders[0].price, json.sellorders[0].price);
 		}
-	market = standardNumbers(market);
 	market = callback(market);
 	return market;
 	});
@@ -19,7 +18,6 @@ function getCexPair(pair_string, callback) {
 		json = data['query'].results.json;
 		var market = setMarket(json.last, json.bid, json.ask);
 
-		market = standardNumbers(market);
 		market = callback(market);
 		return market;
 	});
@@ -30,7 +28,6 @@ function getBittrexPair(pair_string, callback) {
 		json = data['query'].results.json.result;
 		var market = setMarket(json.Last, json.Bid, json.Ask);
 
-		market = standardNumbers(market);
 		market = callback(market);
 		return market;
 	});
@@ -42,7 +39,6 @@ function getVircurexPair(pair_string, callback) {
 		json = data['query'].results.json;		
 		var market = setMarket(json.last_trade, json.highest_bid, json.lowest_ask);
 
-		market = standardNumbers(market);
 		market = callback(market);
 		return market;
 	});
@@ -54,7 +50,6 @@ function getComkortPair(pair_string, callback) {
 			json = data['jquery'].results.markets[i];
 			var market = setMarket(json.last_price, json.buy_orders[0].price, json.sell_orders[0].price);
 
-			market = standardNumbers(market);
 			market = callback(market);
 			return market;
 		}
@@ -66,7 +61,6 @@ function getAllcoinPair(pair_string, callback) {
 		json = data['query'].results.json.data;
 		var market = setMarket(json.trade_price, json.top_bid, json.top_ask);
 
-		market = standardNumbers(market);
 		market = callback(market);
 		return market;
 	});
@@ -77,7 +71,6 @@ function getCCexPair(pair_string, callback) {
 		json = data['query'].results.ticker;
 		var market = setMarket(json.lastprice, json.lastbuy, json.lastsell);
 
-		market = standardNumbers(market);
 		market = callback(market);
 		return market;
 	});
@@ -112,6 +105,6 @@ function setMarket(last, buy, sell) {
 	market['buy'] = buy;
 	market['sell'] = sell;
 	
-	return market;
+	return standardNumbers(market);
 }
 
