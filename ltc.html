@@ -37,17 +37,11 @@
 var markets = new Array();
 markets['cryptsy'] = new Array();
 markets['cex'] = new Array();
-markets['cex']['url'] = "https://cex.io/api/ticker/LTC/BTC";
 markets['bittrex'] = new Array();
-markets['bittrex']['url'] = "https://bittrex.com/api/v1.1/public/getticker?market=btc-ltc";
 markets['allcoin'] = new Array();
-markets['allcoin']['url'] = "https://www.allcoin.com/api2/pair/LTC_BTC";
 markets['c-cex'] = new Array();
-markets['c-cex']['url'] = "https://c-cex.com/t/ltc-btc.json";
 markets['comkort'] = new Array();
-markets['comkort']['url'] = "https://api.comkort.com/v1/public/market/summary?market_alias=ltc_btc";
 markets['vircurex'] = new Array();
-markets['vircurex']['url'] = "https://api.vircurex.com/api/get_info_for_1_currency.json?base=LTC&alt=BTC";
 markets['coin-swap'] = new Array();
 markets['coin-swap']['url'] = "https://api.coin-swap.net/market/stats/LTC/BTC";
 $(function () {
@@ -62,7 +56,6 @@ function startRefresh() {
 			getCryptsyPair(3, function(market) {
 				$("#cryptsy").html("<td>cryptsy</td><td>"+market['last']+"</td><td>"+market['buy']+"</td><td>"+market['sell']+"</td>");
 			});
-
 		}
 		
 		if(key == "cex") {
@@ -72,53 +65,27 @@ function startRefresh() {
 		}
 		if(key == "bittrex") {
 			getBittrexPair("btc-ltc", function(market) {
-			$("#bittrex").html("<td>bittrex</td><td>"+p1_last+"</td><td>"+p1_buy+"</td><td>"+p1_sell+"</td>");
+			$("#bittrex").html("<td>bittrex</td><td>"+market['last']+"</td><td>"+market['buy']+"</td><td>"+market['sell']+"</td>");
 			});
 		}
 		if(key == "allcoin") {
-			$.getJSON('http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20json%20where%20url%3D%22' + encodeURIComponent(url) + '%22&format=json', function (data) {
-					p1_last = data['query'].results.json.data.trade_price;
-					p1_last = Number(p1_last).toFixed(8);
-					p1_sell = data['query'].results.json.data.top_ask;
-					p1_sell = Number(p1_sell).toFixed(8);
-					p1_buy = data['query'].results.json.data.top_bid;
-					p1_buy = Number(p1_buy).toFixed(8);
-
-			$("#allcoin").html("<td>allcoin</td><td>"+p1_last+"</td><td>"+p1_buy+"</td><td>"+p1_sell+"</td>");
+			getAllcoinPair('LTC_BTC', function(market) {
+				$("#allcoin").html("<td>allcoin</td><td>"+market['last']+"</td><td>"+market['buy']+"</td><td>"+market['sell']+"</td>");
 			});
 		}
 		if(key == "c-cex") {
-			$.getJSON('http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20json%20where%20url%3D%22' + encodeURIComponent(url) + '%22&format=json', function (data) {
-					p1_last = data['query'].results.ticker.lastprice;
-					p1_last = Number(p1_last).toFixed(8);
-					p1_sell = data['query'].results.ticker.lastsell;
-					p1_sell = Number(p1_sell).toFixed(8);
-					p1_buy = data['query'].results.ticker.lastbuy;
-					p1_buy = Number(p1_buy).toFixed(8);
-
-			$("#c-cex").html("<td>c-cex</td><td>"+p1_last+"</td><td>"+p1_buy+"</td><td>"+p1_sell+"</td>");
+			getCCexPair('ltc-btc', function(market) {
+				$("#c-cex").html("<td>c-cex</td><td>"+market['last']+"</td><td>"+market['buy']+"</td><td>"+market['sell']+"</td>");
 			});
 		}
 		if(key == "comkort") {
-			$.getJSON('http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20json%20where%20url%3D%22' + encodeURIComponent(url) + '%22&format=json', function (data) {
-				for (var i in data['query'].results.markets) {
-					p1_last = data['query'].results.markets[i].last_price;
-					p1_sell = data['query'].results.markets[i].sell_orders[0].price;
-					p1_sell = data['query'].results.markets[i].buy_orders[0].price;
-				}
-			$("#comkort").html("<td>comkort</td><td>"+p1_last+"</td><td>"+p1_buy+"</td><td>"+p1_sell+"</td>");
+			getComkortPair('btc_ltc', function(market) {
+				$("#comkort").html("<td>comkort</td><td>"+music['last']+"</td><td>"+music['buy']+"</td><td>"+music['sell']+"</td>");
 			});
 		}
 		if(key == "vircurex") {
-			$.getJSON('http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20json%20where%20url%3D%22' + encodeURIComponent(url) + '%22&format=json', function (data) {
-					p1_last = data['query'].results.json.last_trade;
-					p1_last = Number(p1_last).toFixed(8);
-					p1_sell = data['query'].results.json.lowest_ask;
-					p1_sell = Number(p1_sell).toFixed(8);
-					p1_buy = data['query'].results.json.highest_bid;
-					p1_buy = Number(p1_buy).toFixed(8);
-
-			$("#vircurex").html("<td>vircurex</td><td>"+p1_last+"</td><td>"+p1_buy+"</td><td>"+p1_sell+"</td>");
+			getVircurexPair('LTC', function(market) {
+				$("#vircurex").html("<td>vircurex</td><td>"+market['last']+"</td><td>"+market['buy']+"</td><td>"+market['sell']+"</td>");
 			});
 		}
 	}
