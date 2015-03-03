@@ -46,6 +46,19 @@ function getBittrexPair(pair_string, callback) {
 
 }
 
+function getVircurexPair(pair_string, callback) {
+	var market = new Array();
+	$.getJSON('http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20json%20where%20url%3D%22' + encodeURIComponent("https://api.vircurex.com/api/get_info_for_1_currency.json?base="+pair_string+"&alt=BTC") + '%22&format=json', function (data) {
+		json = data['query'].results.json;		
+		market['last'] = json.last_trade;
+		market['sell'] = json.lowest_ask;
+		market['buy'] = json.highest_bid;
+
+		market = standardNumbers(market);
+		market = callback(market);
+		return market;
+}
+
 function standardNumbers(items) {
 	items['last'] = Number(items['last']).toFixed(8);
 	items['sell'] = Number(items['sell']).toFixed(8);
