@@ -3,13 +3,10 @@
 	* Requires jquery to work correctly
 	*/
 function getCryptsyPair(pair_string, callback) {
-	var market = new Array();
 	$.getJSON('http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20json%20where%20url%3D%22' + encodeURIComponent("http://pubapi.cryptsy.com/api.php?method=singlemarketdata&marketid="+ pair_string) + '%22&format=json', function (data) {
 		for (var i in data['query'].results.json.return.markets) {
 			json = data['query'].results.json.return.markets[i];
-			market['last'] = json.lasttradeprice;
-			market['sell'] = json.sellorders[0].price;
-			market['buy'] = json.buyorders[0].price;
+			var market = setMarket(json.lasttradeprice, json.buyorders[0].price, json.sellorders[0].price);
 		}
 	market = standardNumbers(market);
 	market = callback(market);
@@ -18,12 +15,9 @@ function getCryptsyPair(pair_string, callback) {
 }
 
 function getCexPair(pair_string, callback) {
-	var market = new Array();
 	$.getJSON('http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20json%20where%20url%3D%22' + encodeURIComponent("https://cex.io/api/ticker/"+ pair_string) + '%22&format=json', function (data) {
 		json = data['query'].results.json;
-		market['last'] = json.last;
-		market['sell'] = json.ask;
-		market['buy'] = json.bid;
+		var market = setMarket(json.last, json.bid, json.ask);
 
 		market = standardNumbers(market);
 		market = callback(market);
@@ -32,12 +26,9 @@ function getCexPair(pair_string, callback) {
 }
 
 function getBittrexPair(pair_string, callback) {
-	var market = new Array();
 	$.getJSON('http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20json%20where%20url%3D%22' + encodeURIComponent("https://bittrex.com/api/v1.1/public/getticker?market="+pair_string) + '%22&format=json', function (data) {
 		json = data['query'].results.json.result;
-		market['last'] = json.Last;
-		market['sell'] = json.Ask;
-		market['buy'] = json.Bid;
+		var market = setMarket(json.Last, json.Bid, json.Ask);
 
 		market = standardNumbers(market);
 		market = callback(market);
@@ -47,12 +38,9 @@ function getBittrexPair(pair_string, callback) {
 }
 
 function getVircurexPair(pair_string, callback) {
-	var market = new Array();
 	$.getJSON('http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20json%20where%20url%3D%22' + encodeURIComponent("https://api.vircurex.com/api/get_info_for_1_currency.json?base="+pair_string+"&alt=BTC") + '%22&format=json', function (data) {
 		json = data['query'].results.json;		
-		market['last'] = json.last_trade;
-		market['sell'] = json.lowest_ask;
-		market['buy'] = json.highest_bid;
+		var market = setMarket(json.last_trade, json.highest_bid, json.lowest_ask);
 
 		market = standardNumbers(market);
 		market = callback(market);
@@ -61,18 +49,37 @@ function getVircurexPair(pair_string, callback) {
 }
 
 function getComkortPair(pair_string, callback) {
-	var market = new Array();
 	$.getJSON('http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20json%20where%20url%3D%22' + encodeURIComponent("https://api.comkort.com/v1/public/market/summary?market_alias="+pair_string) + '%22&format=json', function (data) {
 		for (var i in data['query'].results.markets) {
 			json = data['jquery'].results.markets[i];
-			market['last'] = json.last_price;
-			market['sell'] = json.sell_orders[0].price;
-			market['sell'] = json.buy_orders[0].price;
+			var market = setMarket(json.last_price, json.buy_orders[0].price, json.sell_orders[0].price);
 
 			market = standardNumbers(market);
 			market = callback(market);
 			return market;
 		}
+	});
+}
+
+function getAllcoinPair(pair_string, callback) {
+	$.getJSON('http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20json%20where%20url%3D%22' + encodeURIComponent("https://www.allcoin.com/api2/pair/"+pair_string) + '%22&format=json', function (data) {
+		json = data['query'].results.json.data;
+		var market = setMarket(json.trade_price, json.top_bid, json.top_ask);
+
+		market = standardNumbers(market);
+		market = callback(market);
+		return market;
+	});
+}
+
+function getCCexPair(pair_string, callback) {
+	$.getJSON('http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20json%20where%20url%3D%22' + encodeURIComponent("https://c-cex.com/t/"+pair_string+".json") + '%22&format=json', function (data) {
+		json = data['query'].results.ticker;
+		var market = setMarket(json.lastprice, json.lastbuy, json.lastsell);
+
+		market = standardNumbers(market);
+		market = callback(market);
+		return market;
 	});
 }
 
@@ -97,5 +104,14 @@ function calcAltProfitability(start, p1buy, p2buy, p3sell, fee) {
 	p3 = p2*p3sell;
 	p4 = p3 - (p3*fee);
 	return p4.toFixed(8);
+}
+
+function setMarket(last, buy, sell) {
+	var market = new Array()
+	market['last'] = last;
+	market['buy'] = buy;
+	market['sell'] = sell;
+	
+	return market;
 }
 
