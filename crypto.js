@@ -57,6 +57,23 @@ function getVircurexPair(pair_string, callback) {
 		market = standardNumbers(market);
 		market = callback(market);
 		return market;
+	});
+}
+
+function getComkortPair(pair_string, callback) {
+	var market = new Array();
+	$.getJSON('http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20json%20where%20url%3D%22' + encodeURIComponent("https://api.comkort.com/v1/public/market/summary?market_alias="+pair_string) + '%22&format=json', function (data) {
+		for (var i in data['query'].results.markets) {
+			json = data['jquery'].results.markets[i];
+			market['last'] = json.last_price;
+			market['sell'] = json.sell_orders[0].price;
+			market['sell'] = json.buy_orders[0].price;
+
+			market = standardNumbers(market);
+			market = callback(market);
+			return market;
+		}
+	});
 }
 
 function standardNumbers(items) {
