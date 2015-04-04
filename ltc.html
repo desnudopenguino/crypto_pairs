@@ -54,6 +54,7 @@ function startRefresh() {
 
 		if(key == "cryptsy") {
 			getCryptsyPair(3, function(market) {
+				printTable(key,market);
 				$("#cryptsy").html("<td>cryptsy</td><td>"+market['last']+"</td><td>"+market['buy']+"</td><td>"+market['sell']+"</td>");
 			});
 		}

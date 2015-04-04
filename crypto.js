@@ -108,3 +108,10 @@ function setMarket(last, buy, sell) {
 	return standardNumbers(market);
 }
 
+function printTable(table_row_id, market) {
+console.log(table_row_id);
+console.log(market);
+	$("#"+table_row_id).html("<td>"+table_row_id+"</td><td>"+market['last']+"</td><td>"+market['buy']+"</td><td>"+market['sell']+"</td>");
+
+}
+

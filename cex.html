@@ -2,14 +2,10 @@
 <html>
 	<head>
 		<style>
-			.normal {
-				color: purple;
-			}
-			.reverse {
-				color: blue;
-			}
-			.last {
-				color: orange;
+			body {
+				color: #00ff00;
+				background-color: #222;
+				margin: 5em;
 			}
 			td {
 				padding: 0.5em;
@@ -18,13 +14,13 @@
 		</style>
 		<meta charset="UTF-8">
 	</head>
-	<body style="margin:5em; background-color: #222; color: #eee;">
+	<body>
 		<table>
 			<tr>
 				<td></td>
-				<td id="p1_label"></td>
-				<td id="p2_label"></td>
-				<td id="p3_label"></td>
+				<td id="p1_label">GHS/BTC</td>
+				<td id="p2_label">GHS/LTC</td>
+				<td id="p3_label">LTC/BTC</td>
 			</tr>
 			<tr>	
 				<td>Last</td>
@@ -101,7 +97,7 @@ function startRefresh() {
 				start = $('#start').val();
 				fee = $('#fee').val();
 
-				trade1 = calcProfitability(start, market1['sell'], market2['buy'], market2['buy'], fee);
+				trade1 = calcProfitability(start, market1['sell'], market2['buy'], market3['buy'], fee);
 				$('#trade1').html(trade1);
 
 				trade2 = calcAltProfitability(start, market3['sell'], market2['sell'], market1['buy'], fee);
