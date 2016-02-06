@@ -1,23 +1,30 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<style>
-			body {
-				margin: 5em;
-				background-color: #222;
-				color: #0f0;
-			}
-			td {
-				padding: 0.5em;
-				border-bottom: 2px solid #dddddd;
-			}
-
-			tr {
-			}
-		</style>
+		<link media="screen" rel="stylesheet" href="style.min.css" />
 		<meta charset="UTF-8">
 	</head>
 	<body>
+		<div class="fixed">
+			<div class="nav clearfix">
+				<div class="logo">
+					Crypto Charts
+				</div>
+				<ul class="pull-right">
+					<li><a href="ltc.html">Litecoin</a></li>
+					<li><a href="doge.html">Dogecoin</a></li>
+					<li><a href="cryptsy.html">Cryptsy</a></li>
+				</ul>
+			</div>
+			<div class="row clearfix">
+				<div class="col_1-5">
+					<div class="col-header">
+						Dogecoin Markets 
+					</div> 
+					<div>
+					</div>
+				</div>
+				<div class="col_3-5" style="padding: 2em">
 		<table id="market_table">
 			<tr>
 				<td>Market Name</td>
@@ -34,6 +41,9 @@
 			<tr id="vircurex"></tr>
 			<tr id="coin-swap"></tr>
 		</table>
+		</div>
+</div>
+</div>
 		
 <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.3.min.js">
 </script>
